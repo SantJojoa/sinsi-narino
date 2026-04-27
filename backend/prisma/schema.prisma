@@ -1,0 +1,109 @@
+datasource db {
+  provider  = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// Usuarios y Autenticación
+model User {
+  id            String              @id @default(cuid())
+  email         String              @unique
+  password      String
+  nombre        String
+  institucion   String
+  role          Role                @default(ADMIN)
+  activo        Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  
+  importaciones ImportacionExcel[]
+  reports       ReporteMensual[]
+}
+
+enum Role {
+  ADMIN
+  SECRETARIO
+  IPS
+  AUDITOR
+}
+
+// Importaciones de Excel
+model ImportacionExcel {
+  id              String              @id @default(cuid())
+  institucion     String
+  mes             Int
+  ano             Int
+  componente      Componente
+  archivoOriginal String
+  estado          EstadoImportacion   @default(PROCESANDO)
+  totalFilas      Int                 @default(0)
+  filasValidas    Int                 @default(0)
+  filasInvalidas  Int                 @default(0)
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+  createdAt       DateTime            @default(now())
+  
+  registros       RegistroComponente[]
+}
+
+enum EstadoImportacion {
+  PROCESANDO
+  COMPLETADO
+  PARCIAL
+  FALLIDO
+}
+
+// Registros individuales por fila
+model RegistroComponente {
+  id            String              @id @default(cuid())
+  importacionId String
+  importacion   ImportacionExcel    @relation(fields: [importacionId], references: [id], onDelete: Cascade)
+  filaExcel     Int
+  datos         Json
+  evidenciaUrl  String?
+  errores       String[]            
+  createdAt     DateTime            
+  
+  @@index([importacionId])
+  @@index([filaExcel])
+}
+
+// Reportes consolidados (opcional)
+model ReporteMensual {
+  id            String              @id @default(cuid())
+  institucion   String
+  mes           Int
+  ano           Int
+  estado        String              @default("ENVIADO")
+  userId        String
+  user          User                @relation(fields: [userId], references: [id])
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  
+  componentes   ComponenteEntry[]
+}
+
+model ComponenteEntry {
+  id          String              @id @default(cuid())
+  reporteId   String
+  reporte     ReporteMensual      @relation(fields: [reporteId], references: [id], onDelete: Cascade)
+  componente  Componente
+  datos       Json
+  evidenciaUrl String?
+  createdAt   DateTime            @default(now())
+}
+
+enum Componente {
+  RECIEN_NACIDO
+  HIPOTIROIDISMO_CONGENITO
+  VALORACION_INTEGRAL
+  SALAS_ERA
+  PLAN_IRA
+  EDA
+  GEOHELMINTIASIS
+  UNIDADES_UAIC
+  MIL_PRIMEROS_DIAS
+}
