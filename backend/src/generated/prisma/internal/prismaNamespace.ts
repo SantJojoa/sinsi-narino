@@ -388,7 +388,8 @@ export const ModelName = {
   ImportacionExcel: 'ImportacionExcel',
   RegistroComponente: 'RegistroComponente',
   ReporteMensual: 'ReporteMensual',
-  ComponenteEntry: 'ComponenteEntry'
+  ComponenteEntry: 'ComponenteEntry',
+  modules: 'modules'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "importacionExcel" | "registroComponente" | "reporteMensual" | "componenteEntry"
+    modelProps: "user" | "importacionExcel" | "registroComponente" | "reporteMensual" | "componenteEntry" | "modules"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +779,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    modules: {
+      payload: Prisma.$modulesPayload<ExtArgs>
+      fields: Prisma.modulesFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.modulesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.modulesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload>
+        }
+        findFirst: {
+          args: Prisma.modulesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.modulesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload>
+        }
+        findMany: {
+          args: Prisma.modulesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload>[]
+        }
+        create: {
+          args: Prisma.modulesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload>
+        }
+        createMany: {
+          args: Prisma.modulesCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.modulesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload>[]
+        }
+        delete: {
+          args: Prisma.modulesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload>
+        }
+        update: {
+          args: Prisma.modulesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload>
+        }
+        deleteMany: {
+          args: Prisma.modulesDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.modulesUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.modulesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload>[]
+        }
+        upsert: {
+          args: Prisma.modulesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$modulesPayload>
+        }
+        aggregate: {
+          args: Prisma.ModulesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateModules>
+        }
+        groupBy: {
+          args: Prisma.modulesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ModulesGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.modulesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ModulesCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -887,6 +962,20 @@ export const ComponenteEntryScalarFieldEnum = {
 } as const
 
 export type ComponenteEntryScalarFieldEnum = (typeof ComponenteEntryScalarFieldEnum)[keyof typeof ComponenteEntryScalarFieldEnum]
+
+
+export const ModulesScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  description: 'description',
+  icon: 'icon',
+  enabled: 'enabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ModulesScalarFieldEnum = (typeof ModulesScalarFieldEnum)[keyof typeof ModulesScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1153,6 +1242,7 @@ export type GlobalOmitConfig = {
   registroComponente?: Prisma.RegistroComponenteOmit
   reporteMensual?: Prisma.ReporteMensualOmit
   componenteEntry?: Prisma.ComponenteEntryOmit
+  modules?: Prisma.modulesOmit
 }
 
 /* Types for Logging */

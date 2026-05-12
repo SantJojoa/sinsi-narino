@@ -42,3 +42,8 @@ export type ReporteMensual = Prisma.ReporteMensualModel
  * 
  */
 export type ComponenteEntry = Prisma.ComponenteEntryModel
+/**
+ * Model modules
+ * 
+ */
+export type modules = Prisma.modulesModel

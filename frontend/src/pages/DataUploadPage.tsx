@@ -1,68 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TopBar from "../components/TopBar";
 import SideBar from "../components/SideBar";
 import ModuleCard from "../components/ModuleCard";
 import StatCard from "../components/StatCard";
 
-// ── Datos de módulos ──────────────────────────────────────────────────────────
-const MODULES = [
-    {
-        id: "recien_nacido",
-        icon: "baby_changing_station",
-        title: "Recién Nacido",
-        description: "Seguimiento Nominal de Recién Nacidos",
-        status: "loaded",
-        meta: "v2.4 Final",
-    },
-    {
-        id: "hipotiroidismo_congenito",
-        icon: "inventory_2",
-        title: "Hipopotiroidismo Congénito",
-        description: "Reporte de casos de hipotiroidismo congénito.",
-        status: "pending",
-        meta: "Sin archivo",
-    },
-    {
-        id: "primera_infancia",
-        icon: "child_care",
-        title: "Primera Infancia",
-        description: "Registro nominal de valoración integral de primera infancia (0-5 años 11 meses y 29 días)",
-        status: "error",
-        meta: "Error Formato",
-    },
-    {
-        id: "infancia",
-        icon: "family_restroom",
-        title: "Infancia",
-        description: "Registro nominal de valoración integral de infancia (6-11 años 11 meses y 29 días).",
-        status: "loaded",
-        meta: "Ayer, 18:45",
-    },
-    {
-        id: "era",
-        icon: "medical_services",
-        title: "Sala ERA",
-        description: "Formato institucional para el registro de casos atendidos en sala ERA",
-        status: "pending",
-        meta: "Pendiente envío",
-    },
-    {
-        id: "eda",
-        icon: "water_drop",
-        title: "EDA",
-        description: "Formato de morbilidad Enfermedad Diarreica Aguda - EDA",
-        status: "loaded",
-        meta: "Hace 2 horas",
-    },
-    {
-        id: "uaic",
-        icon: "local_hospital",
-        title: "UAIC",
-        description: "Seguimiento a niños atendidos en las unidades de atención integral comunitaria.",
-        status: "error",
-        meta: "Archivo corrupto",
-    },
-];
+// ── Tipos ─────────────────────────────────────────────────────────────────────
+interface Module {
+    id: string;
+    key: string;
+    icon: string;
+    title: string;
+    description: string;
+    enabled: boolean;
+}
 
 // ── Datos de estadísticas ─────────────────────────────────────────────────────
 const STATS = [
@@ -75,8 +25,22 @@ const STATS = [
 export default function DataUploadPage() {
     const [activeNav, setActiveNav] = useState("upload");
     const [searchQuery, setSearchQuery] = useState("");
+    const [modules, setModules] = useState<Module[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const filteredModules = MODULES.filter(
+    useEffect(() => {
+        fetch("http://localhost:3000/modules")
+            .then((res) => {
+                if (!res.ok) throw new Error(`Error ${res.status}`);
+                return res.json();
+            })
+            .then((data: Module[]) => setModules(data))
+            .catch((err: Error) => setError(err.message))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const filteredModules = modules.filter(
         (m) =>
             m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             m.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -114,19 +78,27 @@ export default function DataUploadPage() {
                     </header>
 
                     {/* Grid de módulos */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
-                        {filteredModules.map((mod) => (
-                            <ModuleCard
-                                key={mod.id}
-                                icon={mod.icon}
-                                title={mod.title}
-                                description={mod.description}
-                                status={mod.status as "error" | "loaded" | "pending"}
-                                meta={mod.meta}
-                                onUpload={() => handleUpload(mod.id)}
-                            />
-                        ))}
-                    </div>
+                    {loading && (
+                        <p className="font-sans text-body-md text-on-surface-variant">Cargando módulos…</p>
+                    )}
+                    {error && (
+                        <p className="font-sans text-body-md text-error">Error al cargar módulos: {error}</p>
+                    )}
+                    {!loading && !error && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+                            {filteredModules.map((mod) => (
+                                <ModuleCard
+                                    key={mod.id}
+                                    icon={mod.icon}
+                                    title={mod.title}
+                                    description={mod.description}
+                                    status="pending"
+                                    meta="Sin archivo"
+                                    onUpload={() => handleUpload(mod.id)}
+                                />
+                            ))}
+                        </div>
+                    )}
 
                     {/* Sección de resumen */}
                     <section className="mt-2xl">

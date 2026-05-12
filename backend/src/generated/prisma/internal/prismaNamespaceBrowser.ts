@@ -55,7 +55,8 @@ export const ModelName = {
   ImportacionExcel: 'ImportacionExcel',
   RegistroComponente: 'RegistroComponente',
   ReporteMensual: 'ReporteMensual',
-  ComponenteEntry: 'ComponenteEntry'
+  ComponenteEntry: 'ComponenteEntry',
+  modules: 'modules'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -144,6 +145,20 @@ export const ComponenteEntryScalarFieldEnum = {
 } as const
 
 export type ComponenteEntryScalarFieldEnum = (typeof ComponenteEntryScalarFieldEnum)[keyof typeof ComponenteEntryScalarFieldEnum]
+
+
+export const ModulesScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  description: 'description',
+  icon: 'icon',
+  enabled: 'enabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ModulesScalarFieldEnum = (typeof ModulesScalarFieldEnum)[keyof typeof ModulesScalarFieldEnum]
 
 
 export const SortOrder = {

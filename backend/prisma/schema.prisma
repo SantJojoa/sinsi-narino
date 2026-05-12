@@ -1,5 +1,5 @@
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 generator client {
@@ -9,16 +9,16 @@ generator client {
 
 // Usuarios y Autenticación
 model User {
-  id            String              @id @default(cuid())
-  email         String              @unique
-  password      String
-  nombre        String
-  institucion   String
-  role          Role                @default(ADMIN)
-  activo        Boolean             @default(true)
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  nombre      String
+  institucion String
+  role        Role     @default(ADMIN)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   importaciones ImportacionExcel[]
   reports       ReporteMensual[]
 }
@@ -32,21 +32,21 @@ enum Role {
 
 // Importaciones de Excel
 model ImportacionExcel {
-  id              String              @id @default(cuid())
+  id              String            @id @default(cuid())
   institucion     String
   mes             Int
   ano             Int
   componente      Componente
   archivoOriginal String
-  estado          EstadoImportacion   @default(PROCESANDO)
-  totalFilas      Int                 @default(0)
-  filasValidas    Int                 @default(0)
-  filasInvalidas  Int                 @default(0)
+  estado          EstadoImportacion @default(PROCESANDO)
+  totalFilas      Int               @default(0)
+  filasValidas    Int               @default(0)
+  filasInvalidas  Int               @default(0)
   userId          String
-  user            User                @relation(fields: [userId], references: [id])
-  createdAt       DateTime            @default(now())
-  
-  registros       RegistroComponente[]
+  user            User              @relation(fields: [userId], references: [id])
+  createdAt       DateTime          @default(now())
+
+  registros RegistroComponente[]
 }
 
 enum EstadoImportacion {
@@ -58,42 +58,42 @@ enum EstadoImportacion {
 
 // Registros individuales por fila
 model RegistroComponente {
-  id            String              @id @default(cuid())
+  id            String           @id @default(cuid())
   importacionId String
-  importacion   ImportacionExcel    @relation(fields: [importacionId], references: [id], onDelete: Cascade)
+  importacion   ImportacionExcel @relation(fields: [importacionId], references: [id], onDelete: Cascade)
   filaExcel     Int
   datos         Json
   evidenciaUrl  String?
-  errores       String[]            
-  createdAt     DateTime            
-  
+  errores       String[]
+  createdAt     DateTime
+
   @@index([importacionId])
   @@index([filaExcel])
 }
 
 // Reportes consolidados (opcional)
 model ReporteMensual {
-  id            String              @id @default(cuid())
-  institucion   String
-  mes           Int
-  ano           Int
-  estado        String              @default("ENVIADO")
-  userId        String
-  user          User                @relation(fields: [userId], references: [id])
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  
-  componentes   ComponenteEntry[]
+  id          String   @id @default(cuid())
+  institucion String
+  mes         Int
+  ano         Int
+  estado      String   @default("ENVIADO")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  componentes ComponenteEntry[]
 }
 
 model ComponenteEntry {
-  id          String              @id @default(cuid())
-  reporteId   String
-  reporte     ReporteMensual      @relation(fields: [reporteId], references: [id], onDelete: Cascade)
-  componente  Componente
-  datos       Json
+  id           String         @id @default(cuid())
+  reporteId    String
+  reporte      ReporteMensual @relation(fields: [reporteId], references: [id], onDelete: Cascade)
+  componente   Componente
+  datos        Json
   evidenciaUrl String?
-  createdAt   DateTime            @default(now())
+  createdAt    DateTime       @default(now())
 }
 
 enum Componente {
@@ -106,4 +106,15 @@ enum Componente {
   GEOHELMINTIASIS
   UNIDADES_UAIC
   MIL_PRIMEROS_DIAS
+}
+
+model modules {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String
+  description String
+  icon        String
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
