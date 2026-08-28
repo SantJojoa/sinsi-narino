@@ -15,12 +15,6 @@ const modules = [
     description: 'Seguimiento Nominal de Recién Nacidos',
   },
   {
-    key: 'hipotiroidismo_congenito',
-    icon: 'inventory_2',
-    title: 'Hipotiroidismo Congénito',
-    description: 'Reporte de casos de hipotiroidismo congénito.',
-  },
-  {
     key: 'primera_infancia',
     icon: 'child_care',
     title: 'Primera Infancia',
@@ -53,6 +47,10 @@ const modules = [
 ];
 
 async function main() {
+  await (prisma as any).modules.deleteMany({
+    where: { key: 'hipotiroidismo_congenito' },
+  });
+
   for (const mod of modules) {
     await (prisma as any).modules.upsert({
       where: { key: mod.key },
@@ -64,7 +62,7 @@ async function main() {
       create: mod,
     });
   }
-  console.log('Seed completado: 7 módulos insertados/actualizados.');
+  console.log(`Seed completado: ${modules.length} módulos insertados/actualizados.`);
 }
 
 main()

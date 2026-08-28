@@ -41,6 +41,10 @@ export default function ModuleCard({
     status = "pending",
     meta = "",
     onUpload,
+    uploading = false,
+    hasResult = false,
+    resultExpanded = false,
+    onViewResult,
 }: {
     icon: string;
     title: string;
@@ -48,8 +52,13 @@ export default function ModuleCard({
     status: "loaded" | "pending" | "error";
     meta: string;
     onUpload: () => void;
+    uploading?: boolean;
+    hasResult?: boolean;
+    resultExpanded?: boolean;
+    onViewResult?: () => void;
 }) {
     const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending;
+    const actionLabel = uploading ? "Subiendo..." : cfg.actionLabel;
 
     return (
         <div className="bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm hover:shadow-md transition-all group flex flex-col">
@@ -68,17 +77,38 @@ export default function ModuleCard({
 
             {/* Contenido */}
             <h3 className="font-display font-semibold text-h3 text-primary mb-xs">{title}</h3>
-            <p className="font-sans text-body-sm text-on-surface-variant mb-xl flex-1">{description}</p>
+            <p
+                className="font-sans text-body-sm text-on-surface-variant mb-xl flex-1 line-clamp-2"
+                title={description}
+            >
+                {description}
+            </p>
 
             {/* Pie: meta + acción */}
-            <div className="flex items-center justify-between border-t border-outline-variant pt-md">
-                <span className={`font-sans text-label-sm ${cfg.metaClass}`}>{meta}</span>
+            <div className="flex items-center justify-between gap-sm border-t border-outline-variant pt-md">
+                {hasResult ? (
+                    <button
+                        onClick={onViewResult}
+                        aria-expanded={resultExpanded}
+                        className={`flex items-center gap-xs font-sans text-label-sm hover:underline underline-offset-2 bg-transparent border-none cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-tertiary-container ${cfg.metaClass}`}
+                    >
+                        <span className="truncate max-w-[140px]">{meta}</span>
+                        <span className="material-symbols-outlined text-[16px]">
+                            {resultExpanded ? "expand_less" : "expand_more"}
+                        </span>
+                    </button>
+                ) : (
+                    <span className={`font-sans text-label-sm ${cfg.metaClass}`}>{meta}</span>
+                )}
                 <button
                     onClick={onUpload}
-                    className="flex items-center gap-xs text-on-tertiary-container font-sans font-medium text-label-md hover:underline underline-offset-2 bg-transparent border-none cursor-pointer"
+                    disabled={uploading}
+                    className="flex items-center gap-xs text-on-tertiary-container font-sans font-medium text-label-md hover:underline underline-offset-2 bg-transparent border-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-tertiary-container"
                 >
-                    <span className="material-symbols-outlined text-[18px]">upload_file</span>
-                    {cfg.actionLabel}
+                    <span className={`material-symbols-outlined text-[18px] ${uploading ? "animate-spin" : ""}`}>
+                        {uploading ? "progress_activity" : "upload_file"}
+                    </span>
+                    {actionLabel}
                 </button>
             </div>
         </div>
